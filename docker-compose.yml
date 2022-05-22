@@ -1,0 +1,84 @@
+version: "3.7"
+
+services:
+  keycloak-db:
+    image: postgres:latest
+    container_name: ${CONTAINER_ID_NAME?Variable not set}-keycloak-db
+    restart: unless-stopped
+    volumes:
+      - postgre_data:/var/lib/postgresql/data
+      - ./data/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - ${POSTGRES_DB_EXPOSE_PORT?Variable not set}:${POSTGRES_DB_PORT?Variable not set} # expose to 5434
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB_DATABASE?Variable not set}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER?Variable not set}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD?Variable not set}
+      POSTGRES_DB_API: ${POSTGRES_DB_API?Variable not set}
+      POSTGRES_DB_API_USER: ${POSTGRES_DB_API_USER?Variable not set}
+      POSTGRES_DB_API_PASSWORD: ${POSTGRES_DB_API_PASSWORD?Variable not set}
+      TZ: "Asia/Jakarta" # Add timezone
+
+  
+  fastapi:
+    build:
+      context: ./fastapi
+      dockerfile: Dockerfile.dev
+    # image: registry.gitlab.com/ihsansolusi/universal-front-end/api
+    container_name: ${CONTAINER_ID_NAME?Variable not set}-unife-api
+    volumes:
+      - ./fastapi/app:/app
+    restart: unless-stopped
+    #command: tail -f /dev/null
+    command: /start-reload.sh
+    ports:
+      - ${API_HTTP_EXPOSE_PORT?Variable not set}:${API_HTTP_PORT?Variable not set}
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME?Variable not set}
+      # DB variable on app/config.py
+      - POSTGRES_DB_SERVER=${POSTGRES_DB_SERVER?Variable not set}
+      - POSTGRES_DB_PORT=${POSTGRES_DB_PORT?Variable not set}
+      - POSTGRES_DB_EXPOSE_PORT=${POSTGRES_DB_EXPOSE_PORT?Variable not set}
+      - POSTGRES_DB_API=${POSTGRES_DB_API?Variable not set}
+      - POSTGRES_DB_API_USER=${POSTGRES_DB_API_USER?Variable not set}
+      - POSTGRES_DB_API_PASSWORD=${POSTGRES_DB_API_PASSWORD?Variable not set}
+      # DB TEST variable on app/config.py
+      - POSTGRES_DB_SERVER_TEST=${POSTGRES_DB_SERVER_TEST?Variable not set}
+      - POSTGRES_DB_API_TEST=${POSTGRES_DB_API_TEST?Variable not set}
+      - POSTGRES_DB_API_USER_TEST=${POSTGRES_DB_API_USER_TEST?Variable not set}
+      - POSTGRES_DB_API_PASSWORD_TEST=${POSTGRES_DB_API_PASSWORD_TEST?Variable not set}
+      # api variable on app/config.py
+      - API_HTTP_PORT=${API_HTTP_PORT?Variable not set}
+      - API_VERSION=${API_VERSION?Variable not set}
+      - PROXY_ROOT_PATH=${PROXY_ROOT_PATH?Variable not set}
+
+  reactapp:
+    build:
+      context: ./reactapp
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_ID_NAME?Variable not set}-unife-ui
+    volumes:
+      - ./reactapp:/app
+      - /app/node_modules
+    restart: unless-stopped
+    ports:
+      - 8445:3000
+    env_file:
+      - .env
+      #command: tail -f /dev/null
+    environment:
+      KEYCLOAK_AUTH_API: ${KEYCLOAK_AUTH_API?Variable not set}
+      KEYCLOAK_PORT_API: ${KEYCLOAK_PORT_API?Variable not set}
+      KEYCLOAK_SECRET: ${KEYCLOAK_SECRET?Variable not set}
+      KEYCLOAK_CLIENT: ${KEYCLOAK_CLIENT?Variable not set}
+      KEYCLOAK_CLIENT_FRONT: ${KEYCLOAK_CLIENT_FRONT?Variable not set}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM?Variable not set}
+      KEYCLOAK_AUTH_FRONT: ${KEYCLOAK_AUTH_FRONT?Variable not set}
+
+volumes:
+  postgre_data:
+
+networks:
+  default:
+    external:
+      name: ${PROJECT_NETWORK?Variable not set}

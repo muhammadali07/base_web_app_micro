@@ -1,0 +1,46 @@
+.sidebar{
+  background-color: $sidebar !important;
+}
+
+.sidebar-dark-primary .nav-sidebar.nav-legacy>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar.nav-legacy>.nav-item>.nav-link.active {
+  border-color:$base-color !important;
+}
+
+[class*=sidebar-dark] .nav-legacy.nav-sidebar>.nav-item>.nav-link.active {
+  color: $sidenav-text-active !important;
+}
+[class*=sidebar-dark] .nav-legacy.nav-sidebar>.nav-item>.nav-link{
+  color: $sidenav-text !important;
+}
+[class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link {
+  color: $sidenav-text-active !important;
+}
+.brand-link {
+  background-color: $brand !important;
+}
+.brand-text {
+  color: $sidenav-text-active !important;
+  font-weight: bold;
+}
+.main-header{
+  background-color: $navbar !important;
+}
+.bg-base {
+  background-color: $base-color !important;
+}
+.text-base{
+  color: $base-color !important;
+}
+[class*=sidebar-dark-] .nav-header {
+  background-color: inherit;
+  color: $header-nav !important;
+  margin-top: 5px;
+  margin-left: 10px;
+  opacity: 0.4;
+  font-weight: bold;
+}
+.nav-legacy.nav-sidebar>.nav-item>.nav-link.active {
+  background-color: inherit;
+  border-left: 5px solid transparent !important;
+  box-shadow: none;
+}
