@@ -26,7 +26,7 @@ that is a template basic microservices infrastructure to web apps development
 3. After building container is done, you can access the apps :
   - Backend = localhost:8008/docs
   - Frontend = localhost:8445
-5. Stack technology to use in this apps are :
+4. Stack technology to use in this apps are :
   - Backend = Python | FastApi Framework
   - Frontend = React JS
   - Database = PostgreSQL | SQL ALchemy
